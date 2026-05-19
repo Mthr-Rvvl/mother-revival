@@ -12,8 +12,6 @@ export default function DiagnosticPage() {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
-
-  // capture screen state
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -48,18 +46,11 @@ export default function DiagnosticPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    const { stage, context } = calculateStage(answers);
-    const params = new URLSearchParams({
-      stage,
-      name: firstName,
-      ...(context.yearsCarrying ? { years: context.yearsCarrying } : {}),
-      ...(context.children ? { children: context.children } : {}),
-      ...(context.futureSelf ? { futureSelf: context.futureSelf } : {}),
-    });
-    router.push(`/result?${params.toString()}`);
+    const stage = calculateStage(answers);
+    router.push(`/result?stage=${stage}&name=${encodeURIComponent(firstName)}`);
   }
 
-  // WELCOME
+  // WELCOME SCREEN
   if (screen === "welcome") {
     return (
       <main className="min-h-screen bg-[#F5EFE6] flex flex-col">
@@ -70,11 +61,11 @@ export default function DiagnosticPage() {
         </header>
         <div className="flex-1 max-w-2xl mx-auto w-full px-6 pt-20 pb-16">
           <p className="text-xs font-medium tracking-[0.18em] uppercase text-[#6B6157] mb-6">
-            An identity assessment in five stages
+            The Matrescence Identity Audit
           </p>
           <h1 className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tight text-[#1F1814] mb-6">
-            The Matrescence<br />
-            <em className="font-light text-[#8B4513]">Identity Audit</em>
+            Find out exactly<br />
+            <em className="font-light text-[#8B4513]">where you are.</em>
           </h1>
           <p className="text-xl leading-relaxed text-[#1F1814] mb-6">
             You are not broken. You are between.
@@ -84,14 +75,14 @@ export default function DiagnosticPage() {
               Matrescence is a known developmental transition — neurological, psychological, identity-deep. Most women move through it without language, without structure, and without permission to grieve what was while building what comes next.
             </p>
             <p>
-              This audit will not ask what you think. It will reflect what you already know but have not yet had the words for. By the end, you will know exactly where you are in the transition — and what comes next.
+              This audit will reflect what you already know but have not yet had the words for. By the end, you will know exactly where you are in the transition — and what comes next.
             </p>
           </div>
-          <div className="flex gap-10 pt-5 border-t border-[#DDD4C5] mb-10">
+          <div className="flex flex-wrap gap-8 pt-5 border-t border-[#DDD4C5] mb-10">
             {[
-              { label: "19 questions", sub: "Designed to locate, not diagnose" },
-              { label: "3–4 minutes", sub: "Honest answers serve you best" },
-              { label: "Personalised result", sub: "Anchored in maternal neuroscience" },
+              { label: "10 questions", sub: "Designed to locate, not diagnose" },
+              { label: "3 minutes", sub: "Honest answers serve you best" },
+              { label: "Personalised result", sub: "With a clear strategic next step" },
             ].map((m) => (
               <div key={m.label} className="text-sm text-[#8A8175]">
                 <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">{m.label}</strong>
@@ -110,7 +101,7 @@ export default function DiagnosticPage() {
     );
   }
 
-  // CAPTURE
+  // CAPTURE SCREEN
   if (screen === "capture") {
     return (
       <main className="min-h-screen bg-[#F5EFE6] flex flex-col">
@@ -123,8 +114,8 @@ export default function DiagnosticPage() {
           <h2 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight text-[#1F1814] mb-6">
             Your result is <em className="font-light text-[#8B4513]">ready.</em>
           </h2>
-          <p className="text-[#6B6157] text-lg mb-10 max-w-lg">
-            Before we show you exactly where you are, tell us where to send your full Identity Portrait — a personalised reading of your stage, the neuroscience beneath it, and a map of what comes next.
+          <p className="text-[#6B6157] text-lg mb-10 max-w-lg leading-relaxed">
+            Enter your name and email to receive your full profile — your stage, the truth beneath it, your strategic next step, and the exact resource built for where you are right now.
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 max-w-sm">
             <div className="flex flex-col gap-2">
@@ -156,8 +147,8 @@ export default function DiagnosticPage() {
             >
               {submitting ? "Loading..." : "Reveal my result →"}
             </button>
-            <p className="text-xs text-[#8A8175] leading-relaxed">
-              We send considered emails, infrequently. You can unsubscribe at any time. Your responses are used to personalise your reading — never shared.
+            <p className="text-xs text-[#8A8175] leading-relaxed max-w-xs">
+              We send considered emails, infrequently. You can unsubscribe at any time. Your responses personalise your result — never shared.
             </p>
           </form>
         </div>
@@ -165,7 +156,7 @@ export default function DiagnosticPage() {
     );
   }
 
-  // QUESTION
+  // QUESTION SCREEN
   return (
     <main className="min-h-screen bg-[#F5EFE6] flex flex-col">
       <header className="w-full py-5 border-b border-[#DDD4C5] text-center">
@@ -174,8 +165,8 @@ export default function DiagnosticPage() {
         </span>
       </header>
 
-      {/* Progress */}
-      <div className="sticky top-0 z-10 bg-[#F5EFE6] px-6 pt-5">
+      {/* Progress bar */}
+      <div className="sticky top-0 z-10 bg-[#F5EFE6] px-6 pt-5 pb-1">
         <div className="max-w-2xl mx-auto">
           <div className="flex justify-between text-[11px] font-medium tracking-[0.14em] uppercase text-[#8A8175] mb-3">
             <span>Question {current + 1} of {questions.length}</span>
@@ -183,7 +174,7 @@ export default function DiagnosticPage() {
           </div>
           <div className="h-0.5 bg-[#DDD4C5] overflow-hidden">
             <div
-              className="h-full bg-[#1F1814] transition-all duration-500"
+              className="h-full bg-[#1F1814] transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -195,7 +186,7 @@ export default function DiagnosticPage() {
         <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8A8175] mb-5">
           {question.block}
         </p>
-        <h2 className="font-serif text-2xl md:text-3xl leading-snug tracking-tight text-[#1F1814] mb-10">
+        <h2 className="font-serif text-2xl md:text-[28px] leading-snug tracking-tight text-[#1F1814] mb-10">
           {question.question}
         </h2>
 
@@ -204,7 +195,7 @@ export default function DiagnosticPage() {
             <button
               key={i}
               onClick={() => handleSelect(i)}
-              className={`w-full text-left px-5 py-4 border rounded-lg text-base leading-relaxed transition-all duration-200 ${
+              className={`w-full text-left px-5 py-4 border rounded-lg text-base leading-relaxed font-sans transition-all duration-200 ${
                 selected === i
                   ? "bg-[#F2E6DA] border-[#8B4513] text-[#1F1814]"
                   : "bg-[#FBF7EF] border-[#DDD4C5] text-[#1F1814] hover:bg-[#F0E8DA] hover:border-[#8A8175] hover:translate-x-0.5"

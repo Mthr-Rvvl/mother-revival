@@ -9,131 +9,118 @@ function ResultContent() {
   const searchParams = useSearchParams();
   const stage = (searchParams.get("stage") as Stage) ?? "wilderness";
   const name = searchParams.get("name") ?? "";
-  const yearsCarrying = searchParams.get("years") ?? "";
-  const children = searchParams.get("children") ?? "";
-  const futureSelf = searchParams.get("futureSelf") ?? "";
-
   const result = stageResults[stage] ?? stageResults["wilderness"];
   const namePrefix = name ? `${name}, ` : "";
 
   return (
     <main className="min-h-screen bg-[#F5EFE6]">
 
-      {/* Header */}
       <header className="w-full py-5 border-b border-[#DDD4C5] text-center">
         <span className="font-serif italic font-light text-lg tracking-wide text-[#1F1814]">
           Mother <span className="not-italic font-normal ml-1">Revival</span>
         </span>
       </header>
 
-      <div className="max-w-2xl mx-auto px-6 pt-12 pb-20 space-y-14">
+      <div className="max-w-2xl mx-auto px-6 pt-12 pb-20 space-y-12">
 
-        {/* Stage placement */}
+        {/* Archetype heading */}
         <div>
           <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#6B6157] mb-4">
-            Stage {result.stageNumber} of V · Your placement
+            Stage {result.stageNumber} of IV · Your Profile
           </p>
           <h1 className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tight text-[#1F1814]">
-            {namePrefix}{result.headline[0]}<br />
-            <em className="font-light text-[#8B4513]">{result.headline[1]}</em>
+            {namePrefix}your profile is<br />
+            <em className="font-light text-[#8B4513]">{result.title}.</em>
           </h1>
         </div>
 
-        {/* Interior mirror */}
+        {/* Landscape */}
         <section>
           <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
-            The interior mirror
+            The Current Landscape
           </p>
-          <blockquote className="font-serif text-2xl leading-relaxed font-light tracking-tight text-[#1F1814] border-l-2 border-[#8B4513] pl-6">
-            {result.mirror}
-          </blockquote>
+          <p className="text-[#1F1814] text-lg leading-relaxed">{result.landscape}</p>
         </section>
 
-        {/* What this actually is */}
-        <section>
+        {/* Truth — only shown if the stage has one */}
+        {result.truth && (
+          <section className="border-l-2 border-[#8B4513] pl-6">
+            <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
+              The Truth
+            </p>
+            <p className="text-[#1F1814] text-lg leading-relaxed">{result.truth}</p>
+          </section>
+        )}
+
+        {/* Next step */}
+        <section className="bg-[#FBF7EF] border border-[#DDD4C5] rounded-xl px-8 py-8">
           <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
-            What this actually is
+            Your Clean Next Step
           </p>
-          <div className="text-[#1F1814] text-lg leading-relaxed space-y-4">
-            {result.whatThisIs.split("\n\n").map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
+          <p className="text-[#1F1814] text-lg leading-relaxed">{result.nextStep}</p>
         </section>
 
-        {/* Neuroscience */}
-        <section>
-          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
-            The neuroscience beneath it
-          </p>
-          <div className="text-[#1F1814] text-lg leading-relaxed space-y-4">
-            {result.neuroscience.split("\n\n").map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        </section>
-
-        {/* Shareable quote */}
-        <div className="bg-[#FBF7EF] border border-[#DDD4C5] rounded-2xl px-8 py-10 text-center">
-          <p className="font-serif italic text-2xl md:text-3xl font-light leading-relaxed text-[#1F1814]">
-            &ldquo;{result.shareable}&rdquo;
-          </p>
-        </div>
-
-        {/* What comes next */}
-        <section>
-          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
-            What comes next
-          </p>
-          <div className="text-[#1F1814] text-lg leading-relaxed space-y-4">
-            {result.progression.split("\n\n").map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA card */}
-        <div className="bg-[#1F1814] text-[#F5EFE6] rounded-2xl p-10">
-          <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#B07050] mb-4">
-            Continue your reading
-          </p>
-          <h3 className="font-serif text-3xl leading-snug tracking-tight text-[#F5EFE6] mb-4">
-            {result.ctaTitle}
-          </h3>
-          <p className="text-[rgba(245,239,230,0.78)] text-base leading-relaxed mb-8">
-            {result.ctaBody}
-          </p>
-          <button className="bg-[#F5EFE6] text-[#1F1814] px-8 py-4 text-sm font-medium rounded hover:bg-white hover:text-[#8B4513] transition-all duration-200">
-            {result.ctaButton} →
-          </button>
-        </div>
-
-        {/* Context footer */}
-        {(yearsCarrying || children || futureSelf) && (
-          <div className="flex flex-wrap gap-8 pt-6 border-t border-[#DDD4C5] text-sm text-[#8A8175]">
-            {children && (
-              <div>
-                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">Children</strong>
-                {children}
+        {/* Resource — Stage IV gets dual offer, others get single */}
+        {result.secondaryResource ? (
+          <section>
+            <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-6">
+              The Choice for You
+            </p>
+            <div className="space-y-4">
+              {/* Primary option */}
+              <div className="bg-[#1F1814] text-[#F5EFE6] rounded-xl p-8">
+                <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#B07050] mb-3">
+                  Option 1 · Independent Execution
+                </p>
+                <h3 className="font-serif text-2xl leading-snug text-[#F5EFE6] mb-2">
+                  {result.resourceName}
+                </h3>
+                <p className="text-[#B07050] font-medium mb-4">{result.resourcePrice}</p>
+                <p className="text-[rgba(245,239,230,0.78)] text-base leading-relaxed mb-6">
+                  {result.resource}
+                </p>
+                <button className="bg-[#F5EFE6] text-[#1F1814] px-6 py-3 text-sm font-medium rounded hover:bg-white hover:text-[#8B4513] transition-all duration-200">
+                  Get the Rebuilding Framework →
+                </button>
               </div>
-            )}
-            {yearsCarrying && (
-              <div>
-                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">Years carrying the shift</strong>
-                {yearsCarrying}
+              {/* Secondary option */}
+              <div className="bg-[#1F1814] text-[#F5EFE6] rounded-xl p-8 border-2 border-[#8B4513]">
+                <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#B07050] mb-3">
+                  Option 2 · Full Integration · Recommended
+                </p>
+                <h3 className="font-serif text-2xl leading-snug text-[#F5EFE6] mb-2">
+                  {result.secondaryResourceName}
+                </h3>
+                <p className="text-[#B07050] font-medium mb-4">{result.secondaryResourcePrice}</p>
+                <p className="text-[rgba(245,239,230,0.78)] text-base leading-relaxed mb-6">
+                  {result.secondaryResource}
+                </p>
+                <button className="bg-[#8B4513] text-[#F5EFE6] px-6 py-3 text-sm font-medium rounded hover:bg-[#B07050] transition-all duration-200">
+                  Get the Full Arc Bundle →
+                </button>
               </div>
-            )}
-            {futureSelf && (
-              <div>
-                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">Future-self pull</strong>
-                {futureSelf}
-              </div>
-            )}
-          </div>
+            </div>
+          </section>
+        ) : (
+          <section className="bg-[#1F1814] text-[#F5EFE6] rounded-xl p-10">
+            <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#B07050] mb-4">
+              The Resource for You
+            </p>
+            <h3 className="font-serif text-3xl leading-snug tracking-tight text-[#F5EFE6] mb-2">
+              {result.resourceName}
+            </h3>
+            <p className="text-[#B07050] font-medium text-lg mb-5">{result.resourcePrice}</p>
+            <p className="text-[rgba(245,239,230,0.78)] text-base leading-relaxed mb-8">
+              {result.resource}
+            </p>
+            <button className="bg-[#F5EFE6] text-[#1F1814] px-8 py-4 text-sm font-medium rounded hover:bg-white hover:text-[#8B4513] transition-all duration-200">
+              Get {result.resourceName} →
+            </button>
+          </section>
         )}
 
         {/* Clinical boundary */}
-        <div className="border border-[#DDD4C5] rounded-lg p-6 bg-[#FBF7EF]">
+        <div className="border border-[#DDD4C5] rounded-lg p-6">
           <p className="text-[11px] font-medium tracking-[0.14em] uppercase text-[#6B6157] mb-3">
             Important · Please read
           </p>
