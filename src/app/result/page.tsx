@@ -1,151 +1,163 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { stageResults, type Stage } from "@/lib/diagnostic-data";
 
-const stageColors: Record<Stage, string> = {
-  unravelling: "bg-[#8B6F6F]",
-  wilderness: "bg-[#6B7B8D]",
-  searching: "bg-[#7B8B6F]",
-  rebuilding: "bg-[#8B7B6F]",
-  arrival: "bg-[#6F7B8B]",
-};
-
 function ResultContent() {
   const searchParams = useSearchParams();
   const stage = (searchParams.get("stage") as Stage) ?? "wilderness";
+  const name = searchParams.get("name") ?? "";
+  const yearsCarrying = searchParams.get("years") ?? "";
+  const children = searchParams.get("children") ?? "";
+  const futureSelf = searchParams.get("futureSelf") ?? "";
+
   const result = stageResults[stage] ?? stageResults["wilderness"];
-
-  const [email, setEmail] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-    setError("");
-    // Email capture — will connect to a real provider later
-    await new Promise((r) => setTimeout(r, 800));
-    setUnlocked(true);
-    setLoading(false);
-  }
+  const namePrefix = name ? `${name}, ` : "";
 
   return (
-    <main className="min-h-screen bg-[#FAF8F5]">
+    <main className="min-h-screen bg-[#F5EFE6]">
 
-      {/* Stage header — always visible */}
-      <div className={`${stageColors[stage]} text-white px-6 py-16 text-center`}>
-        <p className="text-xs tracking-[0.3em] uppercase opacity-70 mb-4">Your Result</p>
-        <h1 className="text-3xl md:text-5xl font-light leading-tight mb-4">{result.title}</h1>
-        <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">{result.subtitle}</p>
-      </div>
+      {/* Header */}
+      <header className="w-full py-5 border-b border-[#DDD4C5] text-center">
+        <span className="font-serif italic font-light text-lg tracking-wide text-[#1F1814]">
+          Mother <span className="not-italic font-normal ml-1">Revival</span>
+        </span>
+      </header>
 
-      <div className="max-w-2xl mx-auto px-6 py-16">
+      <div className="max-w-2xl mx-auto px-6 pt-12 pb-20 space-y-14">
 
-        {!unlocked ? (
-          /* EMAIL GATE */
-          <div className="space-y-10">
+        {/* Stage placement */}
+        <div>
+          <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#6B6157] mb-4">
+            Stage {result.stageNumber} of V · Your placement
+          </p>
+          <h1 className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tight text-[#1F1814]">
+            {namePrefix}{result.headline[0]}<br />
+            <em className="font-light text-[#8B4513]">{result.headline[1]}</em>
+          </h1>
+        </div>
 
-            {/* Teaser — just enough to confirm accuracy */}
-            <div className="space-y-4 text-[#1C1917] text-lg leading-relaxed">
-              <p>{result.description.split(".").slice(0, 2).join(".")}.</p>
-              <p className="text-[#78716C] italic">
-                There is more to this result — a precise explanation of what is happening in your identity, what staying here costs, and what the path through looks like.
-              </p>
-            </div>
+        {/* Interior mirror */}
+        <section>
+          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
+            The interior mirror
+          </p>
+          <blockquote className="font-serif text-2xl leading-relaxed font-light tracking-tight text-[#1F1814] border-l-2 border-[#8B4513] pl-6">
+            {result.mirror}
+          </blockquote>
+        </section>
 
-            {/* Divider with blur hint */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#FAF8F5] z-10 h-16" />
-              <div className="blur-sm opacity-40 pointer-events-none select-none space-y-3 text-[#1C1917] text-base leading-relaxed">
-                <p>{result.validation.slice(0, 120)}...</p>
-                <p>{result.whatItCosts.slice(0, 80)}...</p>
-              </div>
-            </div>
-
-            {/* Email capture */}
-            <div className="border-t border-[#E5E0D8] pt-10">
-              <h2 className="text-2xl text-[#1C1917] mb-3">Receive your full result.</h2>
-              <p className="text-[#78716C] leading-relaxed mb-8">
-                Enter your email and we&apos;ll send you the complete breakdown — what is happening, why, what it costs to stay here, and what comes next.
-              </p>
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                  placeholder="your@email.com"
-                  className="flex-1 border border-[#E5E0D8] px-4 py-3 text-[#1C1917] bg-white placeholder-[#B8B0A8] focus:outline-none focus:border-[#1C1917] transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-[#1C1917] text-[#FAF8F5] px-8 py-3 text-sm tracking-widest uppercase hover:bg-[#78716C] transition-colors disabled:opacity-60"
-                >
-                  {loading ? "Sending..." : "Unlock my result"}
-                </button>
-              </form>
-              {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
-              <p className="text-xs text-[#78716C] mt-3">No spam. No performance. Just the information that belongs to this stage.</p>
-            </div>
-
+        {/* What this actually is */}
+        <section>
+          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
+            What this actually is
+          </p>
+          <div className="text-[#1F1814] text-lg leading-relaxed space-y-4">
+            {result.whatThisIs.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
           </div>
+        </section>
 
-        ) : (
+        {/* Neuroscience */}
+        <section>
+          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
+            The neuroscience beneath it
+          </p>
+          <div className="text-[#1F1814] text-lg leading-relaxed space-y-4">
+            {result.neuroscience.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+        </section>
 
-          /* FULL RESULT — revealed after email */
-          <div className="space-y-16">
+        {/* Shareable quote */}
+        <div className="bg-[#FBF7EF] border border-[#DDD4C5] rounded-2xl px-8 py-10 text-center">
+          <p className="font-serif italic text-2xl md:text-3xl font-light leading-relaxed text-[#1F1814]">
+            &ldquo;{result.shareable}&rdquo;
+          </p>
+        </div>
 
-            <section>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#78716C] mb-4">What this means</p>
-              <p className="text-[#1C1917] text-lg leading-relaxed">{result.description}</p>
-            </section>
+        {/* What comes next */}
+        <section>
+          <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
+            What comes next
+          </p>
+          <div className="text-[#1F1814] text-lg leading-relaxed space-y-4">
+            {result.progression.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+        </section>
 
-            <section className="border-l-2 border-[#1C1917] pl-6">
-              <p className="text-xs tracking-[0.3em] uppercase text-[#78716C] mb-4">Why this is happening</p>
-              <p className="text-[#1C1917] text-lg leading-relaxed">{result.validation}</p>
-            </section>
+        {/* CTA card */}
+        <div className="bg-[#1F1814] text-[#F5EFE6] rounded-2xl p-10">
+          <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-[#B07050] mb-4">
+            Continue your reading
+          </p>
+          <h3 className="font-serif text-3xl leading-snug tracking-tight text-[#F5EFE6] mb-4">
+            {result.ctaTitle}
+          </h3>
+          <p className="text-[rgba(245,239,230,0.78)] text-base leading-relaxed mb-8">
+            {result.ctaBody}
+          </p>
+          <button className="bg-[#F5EFE6] text-[#1F1814] px-8 py-4 text-sm font-medium rounded hover:bg-white hover:text-[#8B4513] transition-all duration-200">
+            {result.ctaButton} →
+          </button>
+        </div>
 
-            <section className="bg-[#F5F0E8] px-8 py-8">
-              <p className="text-xs tracking-[0.3em] uppercase text-[#78716C] mb-4">What staying here costs</p>
-              <p className="text-[#1C1917] text-lg leading-relaxed">{result.whatItCosts}</p>
-            </section>
-
-            <section>
-              <p className="text-xs tracking-[0.3em] uppercase text-[#78716C] mb-4">What comes next</p>
-              <p className="text-[#1C1917] text-lg leading-relaxed">{result.whatsNext}</p>
-            </section>
-
-            <section className="border-t border-[#E5E0D8] pt-10 text-center">
-              <p className="text-[#78716C] text-sm mb-2">Your full result has been sent to</p>
-              <p className="text-[#1C1917] font-medium mb-8">{email}</p>
-              <p className="text-[#78716C] leading-relaxed max-w-md mx-auto">
-                If it doesn&apos;t arrive within a few minutes, check your spam — it won&apos;t look like a marketing email.
-              </p>
-            </section>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-[#E5E0D8]">
-              <Link
-                href="/diagnostic"
-                className="text-sm text-[#78716C] hover:text-[#1C1917] tracking-widest uppercase transition-colors"
-              >
-                ← Retake the diagnostic
-              </Link>
-              <Link
-                href="/"
-                className="text-sm text-[#78716C] hover:text-[#1C1917] tracking-widest uppercase transition-colors sm:ml-auto"
-              >
-                Return home →
-              </Link>
-            </div>
-
+        {/* Context footer */}
+        {(yearsCarrying || children || futureSelf) && (
+          <div className="flex flex-wrap gap-8 pt-6 border-t border-[#DDD4C5] text-sm text-[#8A8175]">
+            {children && (
+              <div>
+                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">Children</strong>
+                {children}
+              </div>
+            )}
+            {yearsCarrying && (
+              <div>
+                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">Years carrying the shift</strong>
+                {yearsCarrying}
+              </div>
+            )}
+            {futureSelf && (
+              <div>
+                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">Future-self pull</strong>
+                {futureSelf}
+              </div>
+            )}
           </div>
         )}
+
+        {/* Clinical boundary */}
+        <div className="border border-[#DDD4C5] rounded-lg p-6 bg-[#FBF7EF]">
+          <p className="text-[11px] font-medium tracking-[0.14em] uppercase text-[#6B6157] mb-3">
+            Important · Please read
+          </p>
+          <p className="text-sm text-[#6B6157] leading-relaxed">
+            The Mother Revival framework is an educational and developmental methodology. It is not a substitute for professional mental health support. If you are experiencing persistent low mood, inability to function, thoughts of harming yourself or others, or any experience that feels beyond what is described here, please reach out to a licensed mental health professional or crisis service.
+          </p>
+        </div>
+
+        {/* Navigation */}
+        <div className="flex justify-between pt-4 border-t border-[#DDD4C5]">
+          <Link
+            href="/diagnostic"
+            className="text-sm text-[#6B6157] hover:text-[#1F1814] tracking-widest uppercase transition-colors"
+          >
+            ← Retake the audit
+          </Link>
+          <Link
+            href="/"
+            className="text-sm text-[#6B6157] hover:text-[#1F1814] tracking-widest uppercase transition-colors"
+          >
+            Return home →
+          </Link>
+        </div>
+
       </div>
     </main>
   );
@@ -154,8 +166,8 @@ function ResultContent() {
 export default function ResultPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#FAF8F5] flex items-center justify-center">
-        <p className="text-[#78716C] tracking-widest uppercase text-sm">Loading your result...</p>
+      <div className="min-h-screen bg-[#F5EFE6] flex items-center justify-center">
+        <p className="text-[#6B6157] tracking-widest uppercase text-sm">Loading your result...</p>
       </div>
     }>
       <ResultContent />

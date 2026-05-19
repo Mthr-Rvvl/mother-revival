@@ -2,110 +2,226 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { questions, calculateStage, type Stage } from "@/lib/diagnostic-data";
+import { questions, calculateStage } from "@/lib/diagnostic-data";
+
+type Screen = "welcome" | "question" | "capture";
 
 export default function DiagnosticPage() {
   const router = useRouter();
+  const [screen, setScreen] = useState<Screen>("welcome");
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<Stage[]>([]);
-  const [selected, setSelected] = useState<Stage | null>(null);
+  const [answers, setAnswers] = useState<number[]>([]);
+  const [selected, setSelected] = useState<number | null>(null);
+
+  // capture screen state
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const question = questions[current];
-  const progress = ((current) / questions.length) * 100;
-  const isLast = current === questions.length - 1;
+  const progress = (current / questions.length) * 100;
 
-  function handleSelect(stage: Stage) {
-    setSelected(stage);
+  function handleSelect(index: number) {
+    setSelected(index);
+    const newAnswers = [...answers];
+    newAnswers[current] = index;
+
+    setTimeout(() => {
+      if (current < questions.length - 1) {
+        setAnswers(newAnswers);
+        setCurrent(current + 1);
+        setSelected(newAnswers[current + 1] ?? null);
+      } else {
+        setAnswers(newAnswers);
+        setScreen("capture");
+      }
+    }, 420);
   }
 
-  function handleNext() {
-    if (!selected) return;
-    const newAnswers = [...answers, selected];
-
-    if (isLast) {
-      const stage = calculateStage(newAnswers);
-      router.push(`/result?stage=${stage}`);
-    } else {
-      setAnswers(newAnswers);
-      setCurrent(current + 1);
-      setSelected(null);
+  function goBack() {
+    if (current > 0) {
+      setCurrent(current - 1);
+      setSelected(answers[current - 1] ?? null);
     }
   }
 
-  return (
-    <main className="min-h-screen bg-[#FAF8F5] flex flex-col">
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    const { stage, context } = calculateStage(answers);
+    const params = new URLSearchParams({
+      stage,
+      name: firstName,
+      ...(context.yearsCarrying ? { years: context.yearsCarrying } : {}),
+      ...(context.children ? { children: context.children } : {}),
+      ...(context.futureSelf ? { futureSelf: context.futureSelf } : {}),
+    });
+    router.push(`/result?${params.toString()}`);
+  }
 
-      {/* Header */}
-      <div className="px-8 py-6 border-b border-[#E5E0D8]">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <span className="text-xs tracking-[0.2em] uppercase text-[#78716C]">Mother Revival · Diagnostic</span>
-          <span className="text-xs text-[#78716C]">{current + 1} of {questions.length}</span>
+  // WELCOME
+  if (screen === "welcome") {
+    return (
+      <main className="min-h-screen bg-[#F5EFE6] flex flex-col">
+        <header className="w-full py-5 border-b border-[#DDD4C5] text-center">
+          <span className="font-serif italic font-light text-lg tracking-wide text-[#1F1814]">
+            Mother <span className="not-italic font-normal ml-1">Revival</span>
+          </span>
+        </header>
+        <div className="flex-1 max-w-2xl mx-auto w-full px-6 pt-20 pb-16">
+          <p className="text-xs font-medium tracking-[0.18em] uppercase text-[#6B6157] mb-6">
+            An identity assessment in five stages
+          </p>
+          <h1 className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tight text-[#1F1814] mb-6">
+            The Matrescence<br />
+            <em className="font-light text-[#8B4513]">Identity Audit</em>
+          </h1>
+          <p className="text-xl leading-relaxed text-[#1F1814] mb-6">
+            You are not broken. You are between.
+          </p>
+          <div className="text-[#6B6157] text-base space-y-4 max-w-lg mb-10">
+            <p>
+              Matrescence is a known developmental transition — neurological, psychological, identity-deep. Most women move through it without language, without structure, and without permission to grieve what was while building what comes next.
+            </p>
+            <p>
+              This audit will not ask what you think. It will reflect what you already know but have not yet had the words for. By the end, you will know exactly where you are in the transition — and what comes next.
+            </p>
+          </div>
+          <div className="flex gap-10 pt-5 border-t border-[#DDD4C5] mb-10">
+            {[
+              { label: "19 questions", sub: "Designed to locate, not diagnose" },
+              { label: "3–4 minutes", sub: "Honest answers serve you best" },
+              { label: "Personalised result", sub: "Anchored in maternal neuroscience" },
+            ].map((m) => (
+              <div key={m.label} className="text-sm text-[#8A8175]">
+                <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">{m.label}</strong>
+                {m.sub}
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => setScreen("question")}
+            className="bg-[#1F1814] text-[#F5EFE6] px-8 py-4 text-sm font-medium rounded hover:bg-[#8B4513] transition-all duration-200"
+          >
+            Begin the audit →
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // CAPTURE
+  if (screen === "capture") {
+    return (
+      <main className="min-h-screen bg-[#F5EFE6] flex flex-col">
+        <header className="w-full py-5 border-b border-[#DDD4C5] text-center">
+          <span className="font-serif italic font-light text-lg tracking-wide text-[#1F1814]">
+            Mother <span className="not-italic font-normal ml-1">Revival</span>
+          </span>
+        </header>
+        <div className="flex-1 max-w-2xl mx-auto w-full px-6 pt-20 pb-16">
+          <h2 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight text-[#1F1814] mb-6">
+            Your result is <em className="font-light text-[#8B4513]">ready.</em>
+          </h2>
+          <p className="text-[#6B6157] text-lg mb-10 max-w-lg">
+            Before we show you exactly where you are, tell us where to send your full Identity Portrait — a personalised reading of your stage, the neuroscience beneath it, and a map of what comes next.
+          </p>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 max-w-sm">
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium tracking-[0.12em] uppercase text-[#6B6157]">First name</label>
+              <input
+                type="text"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                autoComplete="given-name"
+                className="px-4 py-3 border border-[#DDD4C5] rounded bg-[#FBF7EF] text-[#1F1814] text-base focus:outline-none focus:border-[#1F1814] transition-colors"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium tracking-[0.12em] uppercase text-[#6B6157]">Email</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                className="px-4 py-3 border border-[#DDD4C5] rounded bg-[#FBF7EF] text-[#1F1814] text-base focus:outline-none focus:border-[#1F1814] transition-colors"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-2 self-start bg-[#1F1814] text-[#F5EFE6] px-8 py-4 text-sm font-medium rounded hover:bg-[#8B4513] transition-all duration-200 disabled:opacity-50"
+            >
+              {submitting ? "Loading..." : "Reveal my result →"}
+            </button>
+            <p className="text-xs text-[#8A8175] leading-relaxed">
+              We send considered emails, infrequently. You can unsubscribe at any time. Your responses are used to personalise your reading — never shared.
+            </p>
+          </form>
+        </div>
+      </main>
+    );
+  }
+
+  // QUESTION
+  return (
+    <main className="min-h-screen bg-[#F5EFE6] flex flex-col">
+      <header className="w-full py-5 border-b border-[#DDD4C5] text-center">
+        <span className="font-serif italic font-light text-lg tracking-wide text-[#1F1814]">
+          Mother <span className="not-italic font-normal ml-1">Revival</span>
+        </span>
+      </header>
+
+      {/* Progress */}
+      <div className="sticky top-0 z-10 bg-[#F5EFE6] px-6 pt-5">
+        <div className="max-w-2xl mx-auto">
+          <div className="flex justify-between text-[11px] font-medium tracking-[0.14em] uppercase text-[#8A8175] mb-3">
+            <span>Question {current + 1} of {questions.length}</span>
+            <span>{question.block}</span>
+          </div>
+          <div className="h-0.5 bg-[#DDD4C5] overflow-hidden">
+            <div
+              className="h-full bg-[#1F1814] transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-0.5 bg-[#E5E0D8]">
-        <div
-          className="h-full bg-[#1C1917] transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
       {/* Question */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-16 max-w-2xl mx-auto w-full">
-        <p className="text-xs tracking-[0.3em] uppercase text-[#78716C] mb-6">
-          Question {current + 1}
+      <div className="flex-1 max-w-2xl mx-auto w-full px-6 pt-10 pb-16">
+        <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8A8175] mb-5">
+          {question.block}
         </p>
-        <h2 className="text-2xl md:text-3xl text-[#1C1917] leading-snug mb-3">
+        <h2 className="font-serif text-2xl md:text-3xl leading-snug tracking-tight text-[#1F1814] mb-10">
           {question.question}
         </h2>
-        {question.subtext && (
-          <p className="text-[#78716C] text-sm mb-10">{question.subtext}</p>
-        )}
-        {!question.subtext && <div className="mb-10" />}
 
-        <div className="space-y-4">
+        <div className="flex flex-col gap-3">
           {question.options.map((option, i) => (
             <button
               key={i}
-              onClick={() => handleSelect(option.stage)}
-              className={`w-full text-left px-6 py-5 border transition-all duration-200 ${
-                selected === option.stage
-                  ? "border-[#1C1917] bg-[#1C1917] text-[#FAF8F5]"
-                  : "border-[#E5E0D8] bg-white text-[#1C1917] hover:border-[#78716C]"
+              onClick={() => handleSelect(i)}
+              className={`w-full text-left px-5 py-4 border rounded-lg text-base leading-relaxed transition-all duration-200 ${
+                selected === i
+                  ? "bg-[#F2E6DA] border-[#8B4513] text-[#1F1814]"
+                  : "bg-[#FBF7EF] border-[#DDD4C5] text-[#1F1814] hover:bg-[#F0E8DA] hover:border-[#8A8175] hover:translate-x-0.5"
               }`}
             >
-              <span className="text-base leading-relaxed">{option.text}</span>
+              {option.text}
             </button>
           ))}
         </div>
 
-        <div className="mt-10 flex items-center justify-between">
-          {current > 0 ? (
-            <button
-              onClick={() => {
-                setCurrent(current - 1);
-                setAnswers(answers.slice(0, -1));
-                setSelected(answers[current - 1] ?? null);
-              }}
-              className="text-sm text-[#78716C] hover:text-[#1C1917] transition-colors tracking-widest uppercase"
-            >
-              ← Back
-            </button>
-          ) : (
-            <span />
-          )}
-
+        <div className="mt-10">
           <button
-            onClick={handleNext}
-            disabled={!selected}
-            className={`px-8 py-3 text-sm tracking-widest uppercase transition-all duration-200 ${
-              selected
-                ? "bg-[#1C1917] text-[#FAF8F5] hover:bg-[#78716C] cursor-pointer"
-                : "bg-[#E5E0D8] text-[#78716C] cursor-not-allowed"
-            }`}
+            onClick={goBack}
+            disabled={current === 0}
+            className="text-sm text-[#6B6157] hover:text-[#1F1814] transition-colors disabled:opacity-0 disabled:pointer-events-none"
           >
-            {isLast ? "See my result →" : "Next →"}
+            ← Previous
           </button>
         </div>
       </div>
