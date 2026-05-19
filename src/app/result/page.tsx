@@ -42,8 +42,8 @@ function ResultContent() {
           <p className="text-[#1F1814] text-lg leading-relaxed">{result.landscape}</p>
         </section>
 
-        {/* Truth — only shown if the stage has one */}
-        {result.truth && (
+        {/* Truth — hidden for Stage I to reduce cognitive load */}
+        {result.truth && stage !== "unravelling" && (
           <section className="border-l-2 border-[#8B4513] pl-6">
             <p className="text-[11px] font-medium tracking-[0.16em] uppercase text-[#8B4513] mb-4">
               The Truth

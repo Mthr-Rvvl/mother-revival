@@ -16,23 +16,23 @@ export const questions: Question[] = [
   {
     id: 1,
     block: "Identity Baseline",
-    question: "When you try to track who you are outside of your domestic or professional roles, what does it feel like?",
+    question: "When you try to think about who you are outside of being a mom or your job, what happens?",
     options: [
-      { text: "A sudden, disorienting blank space. I feel like my old self completely dissolved and left nothing behind.", stage: "unravelling" },
-      { text: "A source of hidden friction. I am highly capable of carrying out everything on the outside, but I feel entirely missing on the inside.", stage: "wilderness" },
-      { text: "A quiet curiosity. I find myself actively trying to remember or dig up what I used to love before caregiving took over.", stage: "searching" },
-      { text: "An ongoing active project. I am systematically learning how to build and maintain boundaries to protect my own priorities.", stage: "rebuilding" },
+      { text: "It feels like a total blank space. I look inside and it's like the old me completely vanished and left nothing behind.", stage: "unravelling" },
+      { text: "I know she's in there, but there's a massive gap between the capable, put-together mom everyone sees and the woman inside who feels completely missing.", stage: "wilderness" },
+      { text: "I'm starting to feel a quiet curiosity. I find myself trying to remember what I used to love or care about before everything became about caregiving.", stage: "searching" },
+      { text: "It feels like an active project. I'm actively learning how to say no and protect my own space so I don't lose myself again.", stage: "rebuilding" },
     ],
   },
   {
     id: 2,
     block: "The Nervous System",
-    question: "Which statement best describes the current state of your daily nervous system?",
+    question: "How does your body handle the everyday noise, touch, and demands of your environment right now?",
     options: [
-      { text: "Chronic sensory alarm or deep checking-out. I feel consistently on the edge of panic, easily startled, or completely numb and flat.", stage: "unravelling" },
-      { text: "Managed survival. I operate at a high baseline of internal stress and tension, but I push through to maintain the external look of order.", stage: "wilderness" },
-      { text: "Observant awareness. I am beginning to identify the exact moments, environments, and sensory triggers that overstimulate me.", stage: "searching" },
-      { text: "Active regulation. I am practicing stepping away, communicating my sensory limits, or using physical tools to bring my body down from overload.", stage: "rebuilding" },
+      { text: "I am completely flooded. A crying child, clutter, or a simple question from my partner feels like a physical shock to my system, and I just want to escape.", stage: "unravelling" },
+      { text: "I feel the noise, but I've learned to completely tune out or go numb just to get through the day and cross things off my list.", stage: "wilderness" },
+      { text: "I'm starting to notice my patterns. I can finally tell the difference between just being standard tired and being genuinely overstimulated by the noise around me.", stage: "searching" },
+      { text: "I protect my limits. I take quiet breaks or step away before I hit a breaking point, and I'm comfortable telling my family when I need space.", stage: "rebuilding" },
     ],
   },
   {
@@ -228,13 +228,14 @@ export function calculateStage(answers: number[]): Stage {
     counts[opt.stage]++;
   });
 
-  // Tie-breaker: always default to the earlier stage
-  const order: Stage[] = ["unravelling", "wilderness", "searching", "rebuilding"];
+  // Tie-breaker: loop in reverse (rebuilding → unravelling) using >=
+  // so equal scores always resolve to the earlier (safer) stage
+  const order: Stage[] = ["rebuilding", "searching", "wilderness", "unravelling"];
   let result: Stage = "unravelling";
   let max = -1;
 
   for (const stage of order) {
-    if (counts[stage] > max) {
+    if (counts[stage] >= max) {
       max = counts[stage];
       result = stage;
     }
