@@ -64,8 +64,8 @@ export default function DiagnosticPage() {
             The Identity Audit
           </p>
           <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight text-[#1F1814] mb-8">
-            Do you ever feel like somewhere between becoming a mother and right now —{" "}
-            <em className="font-light text-[#8B4513]">you lost yourself?</em>
+            You used to know who you were. Then you became a mother. And somewhere in between,{" "}
+            <em className="font-light text-[#8B4513]">you disappeared.</em>
           </h1>
           <div className="text-[#1F1814] text-lg leading-relaxed space-y-5 max-w-lg mb-10">
             <p>Not your keys. Not your patience. <em className="font-serif">You.</em></p>
