@@ -85,7 +85,7 @@ export default function DiagnosticPage() {
           <div className="flex flex-wrap gap-8 pt-5 border-t border-[#DDD4C5] mb-10">
             {[
               { label: "10 questions", sub: "3 minutes" },
-              { label: "No jargon", sub: "Just clarity" },
+              { label: "Free", sub: "No strings attached" },
               { label: "Your result", sub: "With a clear next step" },
             ].map((m) => (
               <div key={m.label} className="text-sm text-[#8A8175]">
