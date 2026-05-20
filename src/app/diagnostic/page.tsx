@@ -68,7 +68,6 @@ export default function DiagnosticPage() {
             <em className="font-light text-[#8B4513]">you disappeared.</em>
           </h1>
           <div className="text-[#1F1814] text-lg leading-relaxed space-y-5 max-w-lg mb-10">
-            <p>Not your keys. Not your patience. <em className="font-serif">You.</em></p>
             <p className="text-[#6B6157]">
               You love your kids. That&apos;s not the question. But quietly — maybe only at night when everything finally goes still — you wonder where the woman went. The one who had opinions. Energy. A sense of what she wanted.
             </p>
