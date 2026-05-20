@@ -61,28 +61,32 @@ export default function DiagnosticPage() {
         </header>
         <div className="flex-1 max-w-2xl mx-auto w-full px-6 pt-20 pb-16">
           <p className="text-xs font-medium tracking-[0.18em] uppercase text-[#6B6157] mb-6">
-            The Matrescence Identity Audit
+            The Identity Audit
           </p>
-          <h1 className="font-serif text-5xl md:text-6xl leading-[1.02] tracking-tight text-[#1F1814] mb-6">
-            Find out exactly<br />
-            <em className="font-light text-[#8B4513]">where you are.</em>
+          <h1 className="font-serif text-4xl md:text-5xl leading-[1.1] tracking-tight text-[#1F1814] mb-8">
+            Do you ever feel like somewhere between becoming a mother and right now —{" "}
+            <em className="font-light text-[#8B4513]">you lost yourself?</em>
           </h1>
-          <p className="text-xl leading-relaxed text-[#1F1814] mb-6">
-            You are not broken. You are between.
-          </p>
-          <div className="text-[#6B6157] text-base space-y-4 max-w-lg mb-10">
-            <p>
-              Matrescence is a known developmental transition — neurological, psychological, identity-deep. Most women move through it without language, without structure, and without permission to grieve what was while building what comes next.
+          <div className="text-[#1F1814] text-lg leading-relaxed space-y-5 max-w-lg mb-10">
+            <p>Not your keys. Not your patience. <em className="font-serif">You.</em></p>
+            <p className="text-[#6B6157]">
+              You love your kids. That&apos;s not the question. But quietly — maybe only at night when everything finally goes still — you wonder where the woman went. The one who had opinions. Energy. A sense of what she wanted.
             </p>
-            <p>
-              This audit will reflect what you already know but have not yet had the words for. By the end, you will know exactly where you are in the transition — and what comes next.
+            <p className="font-medium">
+              You&apos;re not depressed. You&apos;re not ungrateful. You&apos;re not failing.
+            </p>
+            <p className="text-[#6B6157]">
+              There is actually a name for what you&apos;re going through. And there&apos;s a map.
+            </p>
+            <p className="text-[#6B6157]">
+              This 10-question audit takes 3 minutes. By the end you&apos;ll know exactly where you are — and for the first time, what comes next.
             </p>
           </div>
           <div className="flex flex-wrap gap-8 pt-5 border-t border-[#DDD4C5] mb-10">
             {[
-              { label: "10 questions", sub: "Designed to locate, not diagnose" },
-              { label: "3 minutes", sub: "Honest answers serve you best" },
-              { label: "Personalised result", sub: "With a clear strategic next step" },
+              { label: "10 questions", sub: "3 minutes" },
+              { label: "No jargon", sub: "Just clarity" },
+              { label: "Your result", sub: "With a clear next step" },
             ].map((m) => (
               <div key={m.label} className="text-sm text-[#8A8175]">
                 <strong className="block font-serif font-normal text-base text-[#1F1814] mb-0.5">{m.label}</strong>
@@ -94,7 +98,7 @@ export default function DiagnosticPage() {
             onClick={() => setScreen("question")}
             className="bg-[#1F1814] text-[#F5EFE6] px-8 py-4 text-sm font-medium rounded hover:bg-[#8B4513] transition-all duration-200"
           >
-            Begin the audit →
+            Show me where I am →
           </button>
         </div>
       </main>
