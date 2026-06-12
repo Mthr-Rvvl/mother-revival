@@ -7,9 +7,9 @@ import { stageResults, type Stage } from "@/lib/diagnostic-data";
 
 function ResultContent() {
   const searchParams = useSearchParams();
-  const stage = (searchParams.get("stage") as Stage) ?? "wilderness";
+  const stage = (searchParams.get("stage") as Stage) ?? "awareness";
   const name = searchParams.get("name") ?? "";
-  const result = stageResults[stage] ?? stageResults["wilderness"];
+  const result = stageResults[stage] ?? stageResults["awareness"];
 
   return (
     <main className="min-h-screen bg-[#F4EFE7]">
@@ -42,7 +42,7 @@ function ResultContent() {
         </section>
 
         {/* Truth — hidden for Stage I to reduce cognitive load */}
-        {result.truth && stage !== "unravelling" && (
+        {result.truth && stage !== "disruption" && (
           <section className="border-l border-[#9C7A54] pl-7">
             <p className="text-[11px] font-normal tracking-[0.22em] uppercase text-[#9C7A54] mb-5">
               The Truth

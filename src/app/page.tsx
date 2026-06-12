@@ -61,11 +61,11 @@ export default function Home() {
         <h2 className="text-3xl md:text-4xl text-[#1C1917] mb-12">There are five stages. You are in one of them.</h2>
         <div className="grid md:grid-cols-5 gap-4">
           {[
-            { num: "01", name: "The Unravelling", desc: "Identity disruption. Mirror estrangement. Acute confusion." },
-            { num: "02", name: "The Wilderness", desc: "Outwardly functioning. Inwardly grieving. Midnight searching." },
-            { num: "03", name: "The Searching", desc: "Pain turning to curiosity. A new appetite for structure." },
-            { num: "04", name: "The Rebuilding", desc: "Active reconstruction. Values clarifying. New patterns forming." },
-            { num: "05", name: "The Arrival", desc: "Integrated identity. Self-authorship. Embodied direction." },
+            { num: "01", name: "Disruption", desc: "The acute phase. The previous self shattered by the demands of motherhood." },
+            { num: "02", name: "Awareness", desc: "Seeing the system. Learning the language for what is happening to you." },
+            { num: "03", name: "Reconnection", desc: "Turning inward. Identity mapping. Rebuilding routines around who you are now." },
+            { num: "04", name: "Reclamation", desc: "Quiet courage. Boundaries. Claiming worth beyond the caregiving role." },
+            { num: "05", name: "Expansion", desc: "Integration. Matrescence becomes a leadership superpower." },
           ].map((stage) => (
             <div key={stage.num} className="border-t border-[#E5E0D8] pt-6">
               <p className="text-xs text-[#78716C] mb-2 tracking-widest">{stage.num}</p>
